@@ -19,6 +19,16 @@ namespace Shatranj
 		~Move();
 		Move& operator=(const Move& oMove);
 		void Reset();
+		void SetPiece(Piece* poPiece);
+		void SetFromSquare(Square* poSquare);
+		void SetToSquare(Square* poSquare);
+		Piece* GetPiece() const;
+		Square* GetFromSquare() const;
+		Square* GetToSquare() const;
+		bool IsCapture() const;
+		bool IsCastle() const;
+		bool IsPromotion() const;
+		bool IsEnPassant() const;
 
 	private:
 

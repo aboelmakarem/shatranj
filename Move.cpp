@@ -35,6 +35,46 @@ namespace Shatranj
 	{
 		Initialize();
 	}
+	void Move::SetPiece(Piece* poPiece)
+	{
+		m_poPiece = poPiece;
+	}
+	void Move::SetFromSquare(Square* poSquare)
+	{
+		m_poFromSquare = poSquare;
+	}
+	void Move::SetToSquare(Square* poSquare)
+	{
+		m_poToSquare = poSquare;
+	}
+	Piece* Move::GetPiece() const
+	{
+		return m_poPiece;
+	}
+	Square* Move::GetFromSquare() const
+	{
+		return m_poFromSquare;
+	}
+	Square* Move::GetToSquare() const
+	{
+		return m_poToSquare;
+	}
+	bool Move::IsCapture() const
+	{
+		return m_bIsCapture;
+	}
+	bool Move::IsCastle() const
+	{
+		return m_bIsCastle;
+	}
+	bool Move::IsPromotion() const
+	{
+		return m_bIsPromotion;
+	}
+	bool Move::IsEnPassant() const
+	{
+		return m_bIsEnPassant;
+	}
 	void Move::Initialize()
 	{
 		m_poPiece = 0;

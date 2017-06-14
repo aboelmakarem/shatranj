@@ -11,43 +11,6 @@
 namespace Shatranj
 {
 	class Piece;
-	enum File
-	{
-		NullFile = 0,
-		A = 1,
-		B = 2,
-		C = 3,
-		D = 4,
-		E = 5,
-		F = 6,
-		G = 7,
-		H = 8
-	};
-
-	class Location
-	{
-	public:
-		Location();
-		Location(const Location& oLocation);
-		~Location();
-		Location& operator=(const Location& oLocation);
-		void Reset();
-		File GetFile() const;
-		unsigned int GetRank() const;
-		void SetFile(const File& eFile);
-		void SetRank(const unsigned int& iRank);
-		Location GetFront() const;
-		Location GetBack() const;
-		Location GetLeft() const;
-		Location GetRight() const;
-
-	private:
-
-	protected:
-		void Initialize();
-		File m_eFile;
-		unsigned int m_iRank;
-	};
 
 	class Square
 	{
@@ -57,11 +20,11 @@ namespace Shatranj
 		~Square();
 		Square& operator=(const Square& oSquare);
 		void Reset();
-		File GetFile() const;
-		unsigned int GetRank() const;
+		int GetFile() const;
+		int GetRank() const;
 		Piece* GetPiece() const;
-		void SetFile(const File& eFile);
-		void SetRank(const unsigned int& iRank);
+		void SetFile(const int& iFile);
+		void SetRank(const int& iRank);
 		bool CapturePiece(Piece* poNewPiece);
 		bool PutPiece(Piece* poPiece);
 		bool MovePiece();
@@ -73,7 +36,8 @@ namespace Shatranj
 
 	protected:
 		void Initialize();
-		Location m_oLocation;
+		int m_iRank;
+		int m_iFile;
 		Piece* m_poPiece;
 	};
 
@@ -83,7 +47,7 @@ namespace Shatranj
 		Board();
 		~Board();
 		void Reset();
-		Square* GetSquare(const unsigned int& iRank,const File& iFile) const;
+		Square* GetSquare(const int& iRank,const int& iFile) const;
 
 	private:
 		// do not copy or equate boards

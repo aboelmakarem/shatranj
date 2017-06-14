@@ -15,22 +15,12 @@ namespace Shatranj
 	enum PieceType
 	{
 		NullPieceType = 0,
-		TheKing = 1,
-		TheQueen = 2,
-		RightRook = 3,
-		LeftRook = 4,
-		RightKnight = 5,
-		LeftKnight = 6,
-		RightBishop = 7,
-		LeftBishop = 8,
-		Pawn1 = 9,
-		Pawn2 = 10,
-		Pawn3 = 11,
-		Pawn4 = 12,
-		Pawn5 = 13,
-		Pawn6 = 14,
-		Pawn7 = 15,
-		Pawn8 = 16
+		KingPiece = 1,
+		QueenPiece = 2,
+		RookPiece = 3,
+		KnightPiece = 4,
+		BishopPiece = 5,
+		PawnPiece = 6
 	};
 
 	class Piece
@@ -109,15 +99,12 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		void SetRight();
-		void SetLeft();
 		
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		bool m_bIsRight;
 	};
 
 	class Knight : public Piece
@@ -130,15 +117,12 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		void SetRight();
-		void SetLeft();
 
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		bool m_bIsRight;
 	};
 
 	class Bishop : public Piece
@@ -151,15 +135,12 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		void SetRight();
-		void SetLeft();
 		
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		bool m_bIsRight;
 	};
 
 	class Pawn : public Piece
@@ -172,14 +153,12 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		void SetID(const unsigned int& iID);
 
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-		unsigned int m_iPawnID;
 	};
 }
 

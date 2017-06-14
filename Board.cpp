@@ -9,87 +9,7 @@
 using namespace std;
 
 namespace Shatranj
-{
-	Location::Location()
-	{
-		Initialize();
-	}
-	Location::Location(const Location& oLocation)
-	{
-		*this = oLocation;
-	}
-	Location::~Location()
-	{
-		Reset();
-	}
-	Location& Location::operator=(const Location& oLocation)
-	{
-		m_eFile = oLocation.m_eFile;
-		m_iRank = oLocation.m_iRank;
-		return *this;
-	}
-	void Location::Reset()
-	{
-		Initialize();
-	}
-	File Location::GetFile() const
-	{
-		return m_eFile;
-	}
-	unsigned int Location::GetRank() const
-	{
-		return m_iRank;
-	}
-	void Location::SetFile(const File& eFile)
-	{
-		m_eFile = eFile;
-	}
-	void Location::SetRank(const unsigned int& iRank)
-	{
-		m_iRank = iRank;
-	}
-	Location Location::GetFront() const
-	{
-		Location oResult(*this);
-		if(m_iRank < 8)			oResult.m_iRank++;
-		return oResult;
-	}
-	Location Location::GetBack() const
-	{
-		Location oResult(*this);
-		if(m_iRank > 0)			oResult.m_iRank--;
-		return oResult;
-	}
-	Location Location::GetLeft() const
-	{
-		Location oResult(*this);
-		if(m_eFile == B)			oResult.m_eFile = A;
-		if(m_eFile == C)			oResult.m_eFile = B;
-		if(m_eFile == D)			oResult.m_eFile = C;
-		if(m_eFile == E)			oResult.m_eFile = D;
-		if(m_eFile == F)			oResult.m_eFile = E;
-		if(m_eFile == G)			oResult.m_eFile = F;
-		if(m_eFile == H)			oResult.m_eFile = G;
-		return oResult;
-	}
-	Location Location::GetRight() const
-	{
-		Location oResult(*this);
-		if(m_eFile == A)			oResult.m_eFile = B;
-		if(m_eFile == B)			oResult.m_eFile = C;
-		if(m_eFile == C)			oResult.m_eFile = D;
-		if(m_eFile == D)			oResult.m_eFile = E;
-		if(m_eFile == E)			oResult.m_eFile = F;
-		if(m_eFile == F)			oResult.m_eFile = G;
-		if(m_eFile == G)			oResult.m_eFile = H;
-		return oResult;
-	}
-	void Location::Initialize()
-	{
-		m_eFile = NullFile;
-		m_iRank = 0;
-	}
-	
+{	
 	Square::Square()
 	{
 		Initialize();
@@ -104,7 +24,8 @@ namespace Shatranj
 	}
 	Square& Square::operator=(const Square& oSquare)
 	{
-		m_oLocation = oSquare.m_oLocation;
+		m_iRank = oSquare.m_iRank;
+		m_iFile = oSquare.m_iFile;
 		m_poPiece = oSquare.m_poPiece;
 		return *this;
 	}
@@ -112,25 +33,25 @@ namespace Shatranj
 	{
 		Initialize();
 	}
-	File Square::GetFile() const
+	int Square::GetFile() const
 	{
-		return m_oLocation.GetFile();
+		return m_iFile;
 	}
-	unsigned int Square::GetRank() const
+	int Square::GetRank() const
 	{
-		return m_oLocation.GetRank();
+		return m_iRank;
 	}
 	Piece* Square::GetPiece() const
 	{
 		return m_poPiece;
 	}
-	void Square::SetFile(const File& eFile)
+	void Square::SetFile(const int& iFile)
 	{
-		m_oLocation.SetFile(eFile);
+		m_iFile = iFile;
 	}
-	void Square::SetRank(const unsigned int& iRank)
+	void Square::SetRank(const int& iRank)
 	{
-		m_oLocation.SetRank(iRank);
+		m_iRank = iRank;
 	}
 	bool Square::CapturePiece(Piece* poNewPiece)
 	{
@@ -163,12 +84,11 @@ namespace Shatranj
 	}
 	bool Square::IsWhite() const
 	{
-		File eFile = m_oLocation.GetFile();
-		unsigned int iRank = m_oLocation.GetRank();
-		bool bIsFileACEG = (eFile == A) || (eFile == C) || (eFile == E) || (eFile == G);
-		bool bIsRank1357 = (iRank == 1) || (iRank == 3) || (iRank == 5) || (iRank == 7);
-		if(bIsRank1357)		return (!bIsFileACEG);
-		else				return (bIsFileACEG);
+		// white squares are the ones with odd ranks and even files or even ranks and odd files
+		bool bIsOddFile = (m_iFile%2 != 0);
+		bool bIsOddRank = (m_iRank%2 != 0);
+		if(bIsOddRank)		return (!bIsOddFile);
+		else				return (bIsOddFile);
 	}
 	bool Square::IsBlack() const
 	{
@@ -176,7 +96,8 @@ namespace Shatranj
 	}
 	void Square::Initialize()
 	{
-		m_oLocation.Reset();
+		m_iRank = 0;
+		m_iFile = 0;
 		m_poPiece = 0;
 	}
 
@@ -202,9 +123,13 @@ namespace Shatranj
 		// the board owns its squares
 		ClearBoard();	
 	}
-	Square* Board::GetSquare(const unsigned int& iRank,const File& iFile) const
+	Square* Board::GetSquare(const int& iRank,const int& iFile) const
 	{
-		return m_vpoSquares[iRank*8 + (unsigned int)iFile];
+		if(iRank < 1)			return 0;
+		if(iRank > 8)			return 0;
+		if(iFile < 1)			return 0;
+		if(iFile > 8)			return 0;
+		return m_vpoSquares[iRank*8 + iFile];
 	}
 	void Board::Initialize()
 	{
@@ -227,8 +152,8 @@ namespace Shatranj
 	{
 		// this function assumes that the board has been cleared before making any calls to it
 		m_vpoSquares.resize(64);
-		unsigned int i = 0;
-		unsigned int j = 0;
+		int i = 0;
+		int j = 0;
 		unsigned int iIndex = 0;
 		Square* poSquare = 0;
 		for(i = 1 ; i <= 8 ; i++)
@@ -237,7 +162,7 @@ namespace Shatranj
 			{
 				poSquare = new Square;
 				poSquare->SetRank(i);
-				poSquare->SetFile((File)j);
+				poSquare->SetFile(j);
 				m_vpoSquares[iIndex] = poSquare;
 				iIndex++;
 			}

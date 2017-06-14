@@ -122,6 +122,8 @@ namespace Shatranj
 	{
 		// the board owns its squares
 		ClearBoard();	
+		m_bIsWhiteCheck = false;
+		m_bIsBlackCheck = false;
 	}
 	Square* Board::GetSquare(const int& iRank,const int& iFile) const
 	{
@@ -131,12 +133,22 @@ namespace Shatranj
 		if(iFile > 8)			return 0;
 		return m_vpoSquares[iRank*8 + iFile];
 	}
+	bool Board::IsWhiteInCheck() const
+	{
+		return m_bIsWhiteCheck;
+	}
+	bool Board::IsBlackInCheck() const
+	{
+		return m_bIsBlackCheck;
+	}
 	void Board::Initialize()
 	{
 		// clear any existing squares
 		ClearBoard();
 		// build the board
 		BuildBoard();
+		m_bIsWhiteCheck = false;
+		m_bIsBlackCheck = false;
 	}
 	void Board::ClearBoard()
 	{

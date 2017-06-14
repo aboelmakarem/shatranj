@@ -23,6 +23,7 @@ namespace Shatranj
 		void SetPiece(Piece* poPiece);
 		void SetFromSquare(Square* poSquare);
 		void SetToSquare(Square* poSquare);
+		void MakeCastle();
 		Piece* GetPiece() const;
 		Square* GetFromSquare() const;
 		Square* GetToSquare() const;

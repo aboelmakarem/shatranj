@@ -48,6 +48,8 @@ namespace Shatranj
 		~Board();
 		void Reset();
 		Square* GetSquare(const int& iRank,const int& iFile) const;
+		bool IsWhiteInCheck() const;
+		bool IsBlackInCheck() const;
 
 	private:
 		// do not copy or equate boards
@@ -59,6 +61,8 @@ namespace Shatranj
 		void ClearBoard();
 		void BuildBoard();
 		std::vector<Square*> m_vpoSquares;
+		bool m_bIsWhiteCheck;
+		bool m_bIsBlackCheck;
 	};
 }
 

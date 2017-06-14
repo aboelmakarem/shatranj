@@ -4,6 +4,7 @@
 // Ahmed Hussein (amhussein4@gmail.com)
 
 #include "Piece.h"
+#include "Move.h"
 
 using namespace std;
 
@@ -52,6 +53,10 @@ namespace Shatranj
 	{
 		return (!m_bIsWhite);
 	}
+	bool Piece::HasMoved() const
+	{
+		return m_bHasMoved;
+	}
 	void Piece::SetSquare(Square* poSquare)
 	{
 		m_poSquare = poSquare;
@@ -68,12 +73,26 @@ namespace Shatranj
 	{
 		m_bIsWhite = false;
 	}
+	void Piece::ApplyMove(Move* poMove)
+	{
+		// the move is assumed to be legal and valid
+		m_bHasMoved = true;
+	}
 	void Piece::Initialize()
 	{
 		m_bIsFree = true;
 		m_bIsWhite = true;
 		m_poSquare = 0;
 		m_bHasMoved = false;
+	}
+	bool Piece::IsSquareOurs(Square* poSquare) const
+	{
+		if(poSquare == 0)			return false;
+		if(poSquare->IsEmpty())		return false;
+		bool bSquareHasWhite = poSquare->GetPiece()->IsWhite();
+		if(m_bIsWhite && bSquareHasWhite)			return true;
+		if((!m_bIsWhite) && (!bSquareHasWhite))		return true;
+		return false;
 	}
 
 	King::King()
@@ -112,7 +131,89 @@ namespace Shatranj
 	}
 	void King::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
-
+		// the king has up to 8 legal moves plus castling
+		int iMyRank = m_poSquare->GetRank();
+		int iMyFile = m_poSquare->GetFile();
+		Square* poSquare = 0;
+		unsigned int i = 0;
+		unsigned int iSize = 8;
+		int piRankSteps[8] = {1,-1,0,0,1,1,-1,-1};
+		int piFileSteps[8] = {0,0,1,-1,1,-1,1,-1};
+		for(i = 0 ; i < iSize ; i++)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + piRankSteps[i],iMyFile + piFileSteps[i]);
+			if(poSquare != 0)
+			{
+				if(!IsSquareOurs(poSquare))		lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			}	
+		}
+		// handle castling, we have up to 2 castling moves, this has to be the first move for the king
+		// and the king cannot be in check
+		if(poBoard->IsWhiteInCheck() && m_bIsWhite)			return;
+		if(poBoard->IsBlackInCheck() && (!m_bIsWhite))		return;
+		if(!m_bHasMoved)
+		{
+			// look at the squares containing the rooks and see whether their rooks
+			// 1. are still on the squares or not
+			// 2. have moved previously or not
+			// examine near castle
+			poSquare = poBoard->GetSquare(iMyRank,8);
+			Piece* poCastlePiece = 0;
+			Move* poMove = 0;
+			if(poSquare != 0)
+			{
+				if(!poSquare->IsEmpty())
+				{
+					poCastlePiece = poSquare->GetPiece();
+					if(poCastlePiece->GetType() == RookPiece)
+					{
+						if(!poCastlePiece->HasMoved())
+						{
+							// now we can castle only if the squares in between the two pieces are all empty
+							if(poBoard->GetSquare(iMyRank,6)->IsEmpty())
+							{
+								if(poBoard->GetSquare(iMyRank,7)->IsEmpty())
+								{
+									// all conditions satisfied, create the move
+									poMove = new Move((Piece*)this,m_poSquare,poBoard->GetSquare(iMyRank,7));
+									poMove->MakeCastle();
+									lpoMoves.push_back(poMove);
+								}
+							}
+						}
+					}
+				}
+			}
+			// examine far castle
+			poSquare = poBoard->GetSquare(iMyRank,1);
+			if(poSquare != 0)
+			{
+				if(!poSquare->IsEmpty())
+				{
+					poCastlePiece = poSquare->GetPiece();
+					if(poCastlePiece->GetType() == RookPiece)
+					{
+						if(!poCastlePiece->HasMoved())
+						{
+							// now we can castle only if the squares in between the two pieces are all empty
+							if(poBoard->GetSquare(iMyRank,4)->IsEmpty())
+							{
+								if(poBoard->GetSquare(iMyRank,3)->IsEmpty())
+								{
+									if(poBoard->GetSquare(iMyRank,2)->IsEmpty())
+									{
+										// all conditions satisfied, create the move
+										poMove = new Move((Piece*)this,m_poSquare,poBoard->GetSquare(iMyRank,3));
+										poMove->MakeCastle();
+										lpoMoves.push_back(poMove);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	Queen::Queen()
@@ -151,7 +252,138 @@ namespace Shatranj
 	}
 	void Queen::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
-
+		// the queen has up to 27 legal moves
+		int iMyRank = m_poSquare->GetRank();
+		int iMyFile = m_poSquare->GetFile();
+		Square* poSquare = 0;
+		// move forward
+		int i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move backward
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank - i,iMyFile);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move right
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank,iMyFile + i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move left
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank,iMyFile - i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move front right
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile + i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move front left
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile - i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move back right
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank - i,iMyFile + i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move back left
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank - i,iMyFile - i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
 	}
 
 	Rook::Rook()
@@ -190,7 +422,74 @@ namespace Shatranj
 	}
 	void Rook::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
-
+		// the rook has 14 legal moves
+		int iMyRank = m_poSquare->GetRank();
+		int iMyFile = m_poSquare->GetFile();
+		Square* poSquare = 0;
+		// move forward
+		int i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move backward
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank - i,iMyFile);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move right
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank,iMyFile + i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move left
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank,iMyFile - i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
 	}
 
 	Knight::Knight()
@@ -229,7 +528,22 @@ namespace Shatranj
 	}
 	void Knight::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
-
+		// the knight has 8 legal moves and is not obstructed by other pieces
+		int iMyRank = m_poSquare->GetRank();
+		int iMyFile = m_poSquare->GetFile();
+		Square* poSquare = 0;
+		unsigned int i = 0;
+		unsigned int iSize = 8;
+		int piRankSteps[8] = {2,2,-2,-2,1,1,-1,-1};
+		int piFileSteps[8] = {1,-1,1,-1,2,-2,2,-2};
+		for(i = 0 ; i < iSize ; i++)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + piRankSteps[i],iMyFile + piFileSteps[i]);
+			if(poSquare != 0)
+			{
+				if(!IsSquareOurs(poSquare))		lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			}	
+		}
 	}
 
 	Bishop::Bishop()
@@ -268,7 +582,74 @@ namespace Shatranj
 	}
 	void Bishop::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
-
+		// the bishop has up to 13 legal moves
+		int iMyRank = m_poSquare->GetRank();
+		int iMyFile = m_poSquare->GetFile();
+		Square* poSquare = 0;
+		// move front right
+		int i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile + i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move front left
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile - i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move back right
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank - i,iMyFile + i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
+		// move back left
+		i = 0;
+		while(true)
+		{
+			poSquare = poBoard->GetSquare(iMyRank - i,iMyFile - i);
+			// if the square does not exist, stop
+			if(poSquare == 0)			break;
+			// if the square contains a piece that is ours, stop
+			if(IsSquareOurs(poSquare))	break;
+			// now we have a square that exists and either is empty or contains an enemy piece, add
+			// a move to it regardless
+			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+			// if it happens to contain an enemy piece, then we are done
+			if(!poSquare->IsEmpty())	break;
+			i++;
+		}
 	}
 
 	Pawn::Pawn()

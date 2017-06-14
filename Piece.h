@@ -35,11 +35,13 @@ namespace Shatranj
 		bool IsFree() const;
 		bool IsWhite() const;
 		bool IsBlack() const;
+		bool HasMoved() const;
 		virtual PieceType GetType() const = 0;
 		void SetSquare(Square* poSquare);
 		void Capture();
 		void SetWhite();
 		void SetBlack();
+		void ApplyMove(Move* poMove);
 		virtual void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const = 0;
 
 	private:
@@ -47,12 +49,13 @@ namespace Shatranj
 	protected:
 		void Initialize();
 		virtual void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const = 0;
+		bool IsSquareOurs(Square* poSquare) const;
 		bool m_bIsFree;
 		bool m_bIsWhite;
 		bool m_bHasMoved;
 		Square* m_poSquare;
 	};
-
+	
 	class King : public Piece
 	{
 	public:

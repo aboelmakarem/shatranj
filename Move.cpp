@@ -54,6 +54,10 @@ namespace Shatranj
 	{
 		m_poToSquare = poSquare;
 	}
+	void Move::MakeCastle()
+	{
+		m_bIsCastle = true;
+	}
 	Piece* Move::GetPiece() const
 	{
 		return m_poPiece;

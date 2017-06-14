@@ -109,12 +109,15 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-
+		void SetRight();
+		void SetLeft();
+		
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		bool m_bIsRight;
 	};
 
 	class Knight : public Piece
@@ -127,12 +130,15 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		void SetRight();
+		void SetLeft();
 
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		bool m_bIsRight;
 	};
 
 	class Bishop : public Piece
@@ -145,12 +151,15 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
-
+		void SetRight();
+		void SetLeft();
+		
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		bool m_bIsRight;
 	};
 
 	class Pawn : public Piece
@@ -163,12 +172,14 @@ namespace Shatranj
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		void SetID(const unsigned int& iID);
 
 	private:
 
 	protected:
 		void Initialize();
 		void GetAllLegalMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		unsigned int m_iPawnID;
 	};
 }
 

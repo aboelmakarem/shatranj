@@ -169,6 +169,7 @@ namespace Shatranj
 	Rook& Rook::operator=(const Rook& oRook)
 	{
 		Piece::operator=(oRook);
+		m_bIsRight = oRook.m_bIsRight;
 		return *this;
 	}
 	void Rook::Reset()
@@ -178,15 +179,25 @@ namespace Shatranj
 	}
 	PieceType Rook::GetType() const
 	{
-
+		if(m_bIsRight)		return RightRook;
+		return LeftRook;
 	}
 	void Rook::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
 	}
+	void Rook::SetRight()
+	{
+		m_bIsRight = true;
+	}
+	void Rook::SetLeft()
+	{
+		m_bIsRight = false;
+	}
 	void Rook::Initialize()
 	{
 		Piece::Initialize();
+		m_bIsRight = false;
 	}
 	void Rook::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
@@ -208,6 +219,7 @@ namespace Shatranj
 	Knight& Knight::operator=(const Knight& oKnight)
 	{
 		Piece::operator=(oKnight);
+		m_bIsRight = oKnight.m_bIsRight;
 		return *this;
 	}
 	void Knight::Reset()
@@ -217,15 +229,25 @@ namespace Shatranj
 	}
 	PieceType Knight::GetType() const
 	{
-
+		if(m_bIsRight)		return RightKnight;
+		return LeftKnight;
 	}
 	void Knight::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
 	}
+	void Knight::SetRight()
+	{
+		m_bIsRight = true;
+	}
+	void Knight::SetLeft()
+	{
+		m_bIsRight = false;
+	}
 	void Knight::Initialize()
 	{
 		Piece::Initialize();
+		m_bIsRight = false;
 	}
 	void Knight::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
@@ -247,6 +269,7 @@ namespace Shatranj
 	Bishop& Bishop::operator=(const Bishop& oBishop)
 	{
 		Piece::operator=(oBishop);
+		m_bIsRight = oBishop.m_bIsRight;
 		return *this;
 	}
 	void Bishop::Reset()
@@ -256,15 +279,25 @@ namespace Shatranj
 	}
 	PieceType Bishop::GetType() const
 	{
-
+		if(m_bIsRight)		return RightBishop;
+		return LeftBishop;
 	}
 	void Bishop::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
 	}
+	void Bishop::SetRight()
+	{
+		m_bIsRight = true;
+	}
+	void Bishop::SetLeft()
+	{
+		m_bIsRight = false;
+	}
 	void Bishop::Initialize()
 	{
 		Piece::Initialize();
+		m_bIsRight = false;
 	}
 	void Bishop::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
@@ -286,6 +319,7 @@ namespace Shatranj
 	Pawn& Pawn::operator=(const Pawn& oPawn)
 	{
 		Piece::operator=(oPawn);
+		m_iPawnID = oPawn.m_iPawnID;
 		return *this;
 	}
 	void Pawn::Reset()
@@ -295,15 +329,28 @@ namespace Shatranj
 	}
 	PieceType Pawn::GetType() const
 	{
-
+		if(m_iPawnID == 1)			return Pawn1;
+		if(m_iPawnID == 2)			return Pawn2;
+		if(m_iPawnID == 3)			return Pawn3;
+		if(m_iPawnID == 4)			return Pawn4;
+		if(m_iPawnID == 5)			return Pawn5;
+		if(m_iPawnID == 6)			return Pawn6;
+		if(m_iPawnID == 7)			return Pawn7;
+		if(m_iPawnID == 8)			return Pawn8;
+		return NullPieceType;
 	}
 	void Pawn::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
 	}
+	void Pawn::SetID(const unsigned int& iID)
+	{
+		m_iPawnID = iID;
+	}
 	void Pawn::Initialize()
 	{
 		Piece::Initialize();
+		m_iPawnID = 0;
 	}
 	void Pawn::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{

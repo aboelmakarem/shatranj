@@ -16,6 +16,7 @@ namespace Shatranj
 	public:		
 		Move();
 		Move(const Move& oMove);
+		Move(Piece* poPiece,Square* poFromSquare,Square* poToSquare);
 		~Move();
 		Move& operator=(const Move& oMove);
 		void Reset();

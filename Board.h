@@ -24,6 +24,31 @@ namespace Shatranj
 		H = 8
 	};
 
+	class Location
+	{
+	public:
+		Location();
+		Location(const Location& oLocation);
+		~Location();
+		Location& operator=(const Location& oLocation);
+		void Reset();
+		File GetFile() const;
+		unsigned int GetRank() const;
+		void SetFile(const File& eFile);
+		void SetRank(const unsigned int& iRank);
+		Location GetFront() const;
+		Location GetBack() const;
+		Location GetLeft() const;
+		Location GetRight() const;
+
+	private:
+
+	protected:
+		void Initialize();
+		File m_eFile;
+		unsigned int m_iRank;
+	};
+
 	class Square
 	{
 	public:
@@ -48,8 +73,7 @@ namespace Shatranj
 
 	protected:
 		void Initialize();
-		File m_eFile;
-		unsigned int m_iRank;
+		Location m_oLocation;
 		Piece* m_poPiece;
 	};
 

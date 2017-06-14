@@ -16,6 +16,13 @@ namespace Shatranj
 	{
 		*this = oMove;
 	}
+	Move::Move(Piece* poPiece,Square* poFromSquare,Square* poToSquare)
+	{
+		Initialize();
+		m_poPiece = poPiece;
+		m_poFromSquare = poFromSquare;
+		m_poToSquare = poToSquare;
+	}
 	Move::~Move()
 	{
 		Reset();

@@ -10,6 +10,7 @@
 #include "list"
 #include "Move.h"
 #include "Piece.h"
+#include "string"
 
 namespace Shatranj
 {
@@ -32,6 +33,7 @@ namespace Shatranj
 		bool IsEmpty() const;
 		bool IsWhite() const;
 		bool IsBlack() const;
+		std::string GetSymbol() const;
 
 	private:
 
@@ -53,6 +55,9 @@ namespace Shatranj
 		bool IsBlackInCheck() const;
 		void ApplyMove(Move* poMove);
 		Move* GetLastMove() const;
+		void GenerateInitialState();
+		void GenerateRandomState();
+		void Show() const;
 
 	private:
 		// do not copy or equate boards
@@ -63,10 +68,12 @@ namespace Shatranj
 		void Initialize();
 		void ClearBoard();
 		void BuildBoard();
+		void ClearPieces();
 		std::vector<Square*> m_vpoSquares;
 		bool m_bIsWhiteCheck;
 		bool m_bIsBlackCheck;
 		std::list<Move*> m_lpoMoves;
+		std::list<Piece*> m_lpoPieces;
 	};
 }
 

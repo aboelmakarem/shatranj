@@ -62,6 +62,7 @@ namespace Shatranj
 	void Piece::SetSquare(Square* poSquare)
 	{
 		m_poSquare = poSquare;
+		m_poSquare->PutPiece(this);
 	}
 	void Piece::Capture()
 	{
@@ -109,6 +110,12 @@ namespace Shatranj
 	{
 		*this = oKing;
 	}
+	King::King(Square* poSquare,const bool& bIsWhite)
+	{
+		Initialize();
+		m_bIsWhite = bIsWhite;
+		SetSquare(poSquare);
+	}
 	King::~King()
 	{
 		Reset();
@@ -130,6 +137,11 @@ namespace Shatranj
 	void King::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
+	}
+	string King::GetSymbol() const
+	{
+		if(m_bIsWhite)		return "WKG";
+		return "BKG";
 	}
 	void King::Initialize()
 	{
@@ -238,6 +250,12 @@ namespace Shatranj
 	{
 		*this = oQueen;
 	}
+	Queen::Queen(Square* poSquare,const bool& bIsWhite)
+	{
+		Initialize();
+		m_bIsWhite = bIsWhite;
+		SetSquare(poSquare);
+	}
 	Queen::~Queen()
 	{
 		Reset();
@@ -259,6 +277,11 @@ namespace Shatranj
 	void Queen::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
+	}
+	string Queen::GetSymbol() const
+	{
+		if(m_bIsWhite)		return "WQN";
+		return "BQN";
 	}
 	void Queen::Initialize()
 	{
@@ -449,6 +472,12 @@ namespace Shatranj
 	{
 		*this = oRook;
 	}
+	Rook::Rook(Square* poSquare,const bool& bIsWhite)
+	{
+		Initialize();
+		m_bIsWhite = bIsWhite;
+		SetSquare(poSquare);
+	}
 	Rook::~Rook()
 	{
 		Reset();
@@ -470,6 +499,11 @@ namespace Shatranj
 	void Rook::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
+	}
+	string Rook::GetSymbol() const
+	{
+		if(m_bIsWhite)		return "WRK";
+		return "BRK";
 	}
 	void Rook::Initialize()
 	{
@@ -576,6 +610,12 @@ namespace Shatranj
 	{
 		*this = oKnight;
 	}
+	Knight::Knight(Square* poSquare,const bool& bIsWhite)
+	{
+		Initialize();
+		m_bIsWhite = bIsWhite;
+		SetSquare(poSquare);
+	}
 	Knight::~Knight()
 	{
 		Reset();
@@ -597,6 +637,11 @@ namespace Shatranj
 	void Knight::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
+	}
+	string Knight::GetSymbol() const
+	{
+		if(m_bIsWhite)		return "WKT";
+		return "BKT";
 	}
 	void Knight::Initialize()
 	{
@@ -638,6 +683,12 @@ namespace Shatranj
 	{
 		*this = oBishop;
 	}
+	Bishop::Bishop(Square* poSquare,const bool& bIsWhite)
+	{
+		Initialize();
+		m_bIsWhite = bIsWhite;
+		SetSquare(poSquare);
+	}
 	Bishop::~Bishop()
 	{
 		Reset();
@@ -659,6 +710,11 @@ namespace Shatranj
 	void Bishop::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
+	}
+	string Bishop::GetSymbol() const
+	{
+		if(m_bIsWhite)		return "WBP";
+		return "BBP";
 	}
 	void Bishop::Initialize()
 	{
@@ -765,6 +821,12 @@ namespace Shatranj
 	{
 		*this = oPawn;
 	}
+	Pawn::Pawn(Square* poSquare,const bool& bIsWhite)
+	{
+		Initialize();
+		m_bIsWhite = bIsWhite;
+		SetSquare(poSquare);
+	}
 	Pawn::~Pawn()
 	{
 		Reset();
@@ -786,6 +848,11 @@ namespace Shatranj
 	void Pawn::GetAllMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
 
+	}
+	string Pawn::GetSymbol() const
+	{
+		if(m_bIsWhite)		return "WPN";
+		return "BPN";
 	}
 	void Pawn::Initialize()
 	{

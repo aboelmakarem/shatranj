@@ -5,6 +5,8 @@
 
 #include "Game.h"
 
+using namespace Shatranj;
+
 namespace Shatranj
 {
 	Game::Game()
@@ -35,6 +37,9 @@ namespace Shatranj
 
 int main(int argc,char** argv)
 {
-
+	Board oBoard;
+	oBoard.GenerateInitialState();
+	oBoard.Show();
 	return 0;
 }
+

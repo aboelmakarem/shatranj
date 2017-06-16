@@ -7,6 +7,7 @@
 #define PIECE_H_
 
 #include "list"
+#include "string"
 
 namespace Shatranj
 {
@@ -45,6 +46,7 @@ namespace Shatranj
 		void ApplyMove(Move* poMove);
 		virtual void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const = 0;
 		unsigned int GetMoveCount() const;
+		virtual std::string GetSymbol() const = 0;
 		
 	private:
 
@@ -63,11 +65,13 @@ namespace Shatranj
 	public:
 		King();
 		King(const King& oKing);
+		King(Square* poSquare,const bool& bIsWhite);
 		~King();
 		King& operator=(const King& oKing);
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		std::string GetSymbol() const;
 
 	private:
 
@@ -81,11 +85,13 @@ namespace Shatranj
 	public:
 		Queen();
 		Queen(const Queen& oQueen);
+		Queen(Square* poSquare,const bool& bIsWhite);
 		~Queen();
 		Queen& operator=(const Queen& oQueen);
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		std::string GetSymbol() const;
 
 	private:
 
@@ -99,11 +105,13 @@ namespace Shatranj
 	public:
 		Rook();
 		Rook(const Rook& oRook);
+		Rook(Square* poSquare,const bool& bIsWhite);
 		~Rook();
 		Rook& operator=(const Rook& oRook);
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		std::string GetSymbol() const;
 		
 	private:
 
@@ -117,11 +125,13 @@ namespace Shatranj
 	public:
 		Knight();
 		Knight(const Knight& oKnight);
+		Knight(Square* poSquare,const bool& bIsWhite);
 		~Knight();
 		Knight& operator=(const Knight& oKnight);
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		std::string GetSymbol() const;
 
 	private:
 
@@ -135,11 +145,13 @@ namespace Shatranj
 	public:
 		Bishop();
 		Bishop(const Bishop& oBishop);
+		Bishop(Square* poSquare,const bool& bIsWhite);
 		~Bishop();
 		Bishop& operator=(const Bishop& oBishop);
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		std::string GetSymbol() const;
 		
 	private:
 
@@ -153,11 +165,13 @@ namespace Shatranj
 	public:
 		Pawn();
 		Pawn(const Pawn& oPawn);
+		Pawn(Square* poSquare,const bool& bIsWhite);
 		~Pawn();
 		Pawn& operator=(const Pawn& oPawn);
 		void Reset();
 		PieceType GetType() const;
 		void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const;
+		std::string GetSymbol() const;
 
 	private:
 

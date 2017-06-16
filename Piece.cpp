@@ -5,6 +5,8 @@
 
 #include "Piece.h"
 #include "Move.h"
+#include "Board.h"
+#include "stdlib.h"
 
 using namespace std;
 
@@ -29,7 +31,7 @@ namespace Shatranj
 			m_bIsFree = oPiece.m_bIsFree;
 			m_bIsWhite = oPiece.m_bIsWhite;
 			m_poSquare = oPiece.m_poSquare;
-			m_bHasMoved = oPiece.m_bHasMoved;
+			m_iMoveCount = oPiece.m_iMoveCount;
 		}
 		return *this;
 	}
@@ -55,7 +57,7 @@ namespace Shatranj
 	}
 	bool Piece::HasMoved() const
 	{
-		return m_bHasMoved;
+		return (m_iMoveCount == 0);
 	}
 	void Piece::SetSquare(Square* poSquare)
 	{
@@ -76,14 +78,18 @@ namespace Shatranj
 	void Piece::ApplyMove(Move* poMove)
 	{
 		// the move is assumed to be legal and valid
-		m_bHasMoved = true;
+		m_iMoveCount++;
+	}
+	unsigned int Piece::GetMoveCount() const
+	{
+		return m_iMoveCount;
 	}
 	void Piece::Initialize()
 	{
 		m_bIsFree = true;
 		m_bIsWhite = true;
 		m_poSquare = 0;
-		m_bHasMoved = false;
+		m_iMoveCount = 0;
 	}
 	bool Piece::IsSquareOurs(Square* poSquare) const
 	{
@@ -151,7 +157,7 @@ namespace Shatranj
 		// and the king cannot be in check
 		if(poBoard->IsWhiteInCheck() && m_bIsWhite)			return;
 		if(poBoard->IsBlackInCheck() && (!m_bIsWhite))		return;
-		if(!m_bHasMoved)
+		if(m_iMoveCount == 0)
 		{
 			// look at the squares containing the rooks and see whether their rooks
 			// 1. are still on the squares or not
@@ -688,7 +694,97 @@ namespace Shatranj
 	}
 	void Pawn::GetAllLegalMoves(Board* poBoard,list<Move*> lpoMoves) const
 	{
-
+		// a pawn has at most 4 basic moves in addition to en-passant capturing and promotions
+		// also a pawn moves only forward, so the color of the pawn makes a difference
+		int iMyRank = m_poSquare->GetRank();
+		int iMyFile = m_poSquare->GetFile();
+		int iMoveDirection = 1;
+		if(!m_bIsWhite)		iMoveDirection = -1;
+		Square* poSquare = 0;
+		// add the basic move
+		poSquare = poBoard->GetSquare(iMyRank + iMoveDirection,iMyFile);
+		if(poSquare != 0)
+		{
+			// we have a square but it has to be empty for the pawn to move to it
+			if(poSquare->IsEmpty())		lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+		}
+		// if this is the first move for the pawn, it can jump 2 squares ahead
+		if(m_iMoveCount == 0)
+		{
+			poSquare = poBoard->GetSquare(iMyRank + 2*iMoveDirection,iMyFile);
+			if(poSquare != 0)
+			{
+				// we have a square but it has to be empty for the pawn to move to it
+				// also the square before it needs to be empty
+				if(poBoard->GetSquare(iMyRank + iMoveDirection,iMyFile)->IsEmpty())
+				{
+					if(poSquare->IsEmpty())		lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+				}
+			}
+		}
+		// generate the diagonal capturing moves, the target square has to have an enemy piece
+		poSquare = poBoard->GetSquare(iMyRank + iMoveDirection,iMyFile + 1);
+		Move* poThisMove = 0;
+		bool bMoveExists = false;
+		if(poSquare != 0)
+		{
+			if(!poSquare->IsEmpty())
+			{
+				if(poSquare->GetPiece()->IsWhite() && (!m_bIsWhite))	bMoveExists = true;
+				if((!poSquare->GetPiece()->IsWhite()) && m_bIsWhite)	bMoveExists = true;
+				if(bMoveExists)
+				{
+					poThisMove = new Move((Piece*)this,m_poSquare,poSquare);
+					poThisMove->MakeCapture();
+					lpoMoves.push_back(poThisMove);
+				}
+			}
+		}
+		poSquare = poBoard->GetSquare(iMyRank + iMoveDirection,iMyFile - 1);
+		bMoveExists = false;
+		if(poSquare != 0)
+		{
+			if(!poSquare->IsEmpty())
+			{
+				if(poSquare->GetPiece()->IsWhite() && (!m_bIsWhite))	bMoveExists = true;
+				if((!poSquare->GetPiece()->IsWhite()) && m_bIsWhite)	bMoveExists = true;
+				if(bMoveExists)
+				{
+					poThisMove = new Move((Piece*)this,m_poSquare,poSquare);
+					poThisMove->MakeCapture();
+					lpoMoves.push_back(poThisMove);
+				}
+			}
+		}
+		// generate the en-passant moves
+		Move* poLastMove = poBoard->GetLastMove();
+		if(poLastMove != 0)
+		{
+			Piece* poEnemyPiece = poLastMove->GetPiece();
+			if(poEnemyPiece->GetType() == PawnPiece)
+			{
+				// the last move was made by an enemy pawn, see if it was:
+				// 1. the first move done by that pawn
+				if(poEnemyPiece->GetMoveCount() == 1)
+				{
+					// 2. a 2 square move
+					if(abs(poLastMove->GetToSquare()->GetRank() - poLastMove->GetFromSquare()->GetRank()) == 2)
+					{
+						// finally, make sure that the enemy pawn ended right next to this piece
+						if(poEnemyPiece->GetSquare()->GetRank() == iMyRank)
+						{
+							if(abs(poEnemyPiece->GetSquare()->GetFile() - iMyFile) == 1)
+							{
+								// that's it, we have a possible en-passant move
+								poThisMove = new Move((Piece*)this,m_poSquare,poBoard->GetSquare(iMyRank + iMoveDirection,poEnemyPiece->GetSquare()->GetFile()));
+								poThisMove->MakeEnPassant();
+								lpoMoves.push_back(poThisMove);
+							}
+						}
+					}
+				}				
+			}
+		}
 	}
 }
 

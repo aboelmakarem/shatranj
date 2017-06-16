@@ -7,11 +7,12 @@
 #define BOARD_H_
 
 #include "vector"
+#include "list"
+#include "Move.h"
+#include "Piece.h"
 
 namespace Shatranj
 {
-	class Piece;
-
 	class Square
 	{
 	public:
@@ -50,6 +51,8 @@ namespace Shatranj
 		Square* GetSquare(const int& iRank,const int& iFile) const;
 		bool IsWhiteInCheck() const;
 		bool IsBlackInCheck() const;
+		void ApplyMove(Move* poMove);
+		Move* GetLastMove() const;
 
 	private:
 		// do not copy or equate boards
@@ -63,6 +66,7 @@ namespace Shatranj
 		std::vector<Square*> m_vpoSquares;
 		bool m_bIsWhiteCheck;
 		bool m_bIsBlackCheck;
+		std::list<Move*> m_lpoMoves;
 	};
 }
 

@@ -6,11 +6,10 @@
 #ifndef MOVE_H_
 #define MOVE_H_
 
-#include "Board.h"
-#include "Piece.h"
-
 namespace Shatranj
 {
+	class Square;
+	class Piece;
 	class Move
 	{
 	public:		
@@ -23,7 +22,10 @@ namespace Shatranj
 		void SetPiece(Piece* poPiece);
 		void SetFromSquare(Square* poSquare);
 		void SetToSquare(Square* poSquare);
+		void MakeCapture();
 		void MakeCastle();
+		void MakePromotion();
+		void MakeEnPassant();
 		Piece* GetPiece() const;
 		Square* GetFromSquare() const;
 		Square* GetToSquare() const;

@@ -4,7 +4,6 @@
 // Ahmed Hussein (amhussein4@gmail.com)
 
 #include "Board.h"
-#include "Piece.h"
 
 using namespace std;
 
@@ -141,6 +140,16 @@ namespace Shatranj
 	{
 		return m_bIsBlackCheck;
 	}
+	void Board::ApplyMove(Move* poMove)
+	{
+		// the move is guaranteed to be legal, no need to check it, add it unless it does not exist
+		if(poMove != 0)			m_lpoMoves.push_back(poMove);
+	}
+	Move* Board::GetLastMove() const
+	{
+		if(m_lpoMoves.empty())		return 0;
+		return m_lpoMoves.back();
+	}
 	void Board::Initialize()
 	{
 		// clear any existing squares
@@ -159,6 +168,12 @@ namespace Shatranj
 			if(m_vpoSquares[i] != 0)		delete m_vpoSquares[i];
 		}
 		m_vpoSquares.clear();
+		list<Move*>::iterator liMoves;
+		for(liMoves = m_lpoMoves.begin() ; liMoves != m_lpoMoves.end() ; liMoves++)
+		{
+			if((*liMoves) != 0)			delete (*liMoves);
+		}
+		m_lpoMoves.clear();
 	}
 	void Board::BuildBoard()
 	{

@@ -6,11 +6,12 @@
 #ifndef PIECE_H_
 #define PIECE_H_
 
-#include "Board.h"
 #include "list"
 
 namespace Shatranj
 {
+	class Square;
+	class Board;
 	class Move;
 	enum PieceType
 	{
@@ -43,7 +44,8 @@ namespace Shatranj
 		void SetBlack();
 		void ApplyMove(Move* poMove);
 		virtual void GetAllMoves(Board* poBoard,std::list<Move*> lpoMoves) const = 0;
-
+		unsigned int GetMoveCount() const;
+		
 	private:
 
 	protected:
@@ -52,7 +54,7 @@ namespace Shatranj
 		bool IsSquareOurs(Square* poSquare) const;
 		bool m_bIsFree;
 		bool m_bIsWhite;
-		bool m_bHasMoved;
+		unsigned int m_iMoveCount;
 		Square* m_poSquare;
 	};
 	

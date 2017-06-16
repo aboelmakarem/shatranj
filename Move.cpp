@@ -5,6 +5,8 @@
 // Ahmed Hussein (amhussein4@gmail.com)
 
 #include "Move.h"
+#include "Board.h"
+#include "Piece.h"
 
 namespace Shatranj
 {
@@ -54,9 +56,32 @@ namespace Shatranj
 	{
 		m_poToSquare = poSquare;
 	}
+	void Move::MakeCapture()
+	{
+		m_bIsCapture = true;
+		m_bIsCastle = false;
+		m_bIsPromotion = false;
+	}
 	void Move::MakeCastle()
 	{
+		m_bIsCapture = false;
 		m_bIsCastle = true;
+		m_bIsPromotion = true;
+		m_bIsEnPassant = false;
+	}
+	void Move::MakePromotion()
+	{
+		m_bIsCapture = false;
+		m_bIsCastle = false;
+		m_bIsPromotion = true;
+		m_bIsEnPassant = false;
+	}
+	void Move::MakeEnPassant()
+	{
+		m_bIsCapture = true;
+		m_bIsCastle = false;
+		m_bIsPromotion = false;
+		m_bIsEnPassant = true;
 	}
 	Piece* Move::GetPiece() const
 	{

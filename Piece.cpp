@@ -145,12 +145,20 @@ namespace Shatranj
 		unsigned int iSize = 8;
 		int piRankSteps[8] = {1,-1,0,0,1,1,-1,-1};
 		int piFileSteps[8] = {0,0,1,-1,1,-1,1,-1};
+		Move* poMove = 0;
 		for(i = 0 ; i < iSize ; i++)
 		{
 			poSquare = poBoard->GetSquare(iMyRank + piRankSteps[i],iMyFile + piFileSteps[i]);
 			if(poSquare != 0)
 			{
-				if(!IsSquareOurs(poSquare))		lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+				if(!IsSquareOurs(poSquare))
+				{
+					// the square is not ours, then we can move to it, create the move
+					poMove = new Move((Piece*)this,m_poSquare,poSquare);
+					// if the square is not empty, then it is a capture move, mark it as such
+					if(!poSquare->IsEmpty())		poMove->MakeCapture();
+					lpoMoves.push_back(poMove);
+				}
 			}	
 		}
 		// handle castling, we have up to 2 castling moves, this has to be the first move for the king
@@ -264,6 +272,7 @@ namespace Shatranj
 		Square* poSquare = 0;
 		// move forward
 		int i = 0;
+		Move* poMove = 0;
 		while(true)
 		{
 			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile);
@@ -273,9 +282,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move backward
@@ -289,9 +303,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move right
@@ -305,9 +324,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move left
@@ -321,9 +345,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move front right
@@ -337,9 +366,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move front left
@@ -353,9 +387,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move back right
@@ -369,9 +408,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move back left
@@ -385,9 +429,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 	}
@@ -434,6 +483,7 @@ namespace Shatranj
 		Square* poSquare = 0;
 		// move forward
 		int i = 0;
+		Move* poMove = 0;
 		while(true)
 		{
 			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile);
@@ -443,9 +493,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move backward
@@ -459,9 +514,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move right
@@ -475,9 +535,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move left
@@ -491,9 +556,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 	}
@@ -542,12 +612,20 @@ namespace Shatranj
 		unsigned int iSize = 8;
 		int piRankSteps[8] = {2,2,-2,-2,1,1,-1,-1};
 		int piFileSteps[8] = {1,-1,1,-1,2,-2,2,-2};
+		Move* poMove = 0;
 		for(i = 0 ; i < iSize ; i++)
 		{
 			poSquare = poBoard->GetSquare(iMyRank + piRankSteps[i],iMyFile + piFileSteps[i]);
 			if(poSquare != 0)
 			{
-				if(!IsSquareOurs(poSquare))		lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
+				if(!IsSquareOurs(poSquare))
+				{
+					// the square is not ours, then we can move to it, create the move
+					poMove = new Move((Piece*)this,m_poSquare,poSquare);
+					// if the square is not empty, then it is a capture move, mark it as such
+					if(!poSquare->IsEmpty())		poMove->MakeCapture();
+					lpoMoves.push_back(poMove);
+				}
 			}	
 		}
 	}
@@ -594,6 +672,7 @@ namespace Shatranj
 		Square* poSquare = 0;
 		// move front right
 		int i = 0;
+		Move* poMove = 0;
 		while(true)
 		{
 			poSquare = poBoard->GetSquare(iMyRank + i,iMyFile + i);
@@ -603,9 +682,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move front left
@@ -619,9 +703,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move back right
@@ -635,9 +724,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 		// move back left
@@ -651,9 +745,14 @@ namespace Shatranj
 			if(IsSquareOurs(poSquare))	break;
 			// now we have a square that exists and either is empty or contains an enemy piece, add
 			// a move to it regardless
-			lpoMoves.push_back(new Move((Piece*)this,m_poSquare,poSquare));
-			// if it happens to contain an enemy piece, then we are done
-			if(!poSquare->IsEmpty())	break;
+			poMove = new Move((Piece*)this,m_poSquare,poSquare);
+			lpoMoves.push_back(poMove);
+			// if it happens to contain an enemy piece, then we are done, mark the move as a capture
+			if(!poSquare->IsEmpty())
+			{
+				poMove->MakeCapture();
+				break;	
+			};
 			i++;
 		}
 	}
